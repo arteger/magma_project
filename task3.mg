@@ -28,4 +28,4 @@ end for;
 if not answerIsFound then
     printf "Answer not found";
 end if;
-//answer is 1048365359197061237440588
+//answer is 1048365359197061237440588 = 0xDE00000000000000004C

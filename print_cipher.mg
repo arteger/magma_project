@@ -8,7 +8,7 @@ function VecToInt(v)
 	return Seqint(Reverse(e),2);
 end function;
 
-procedure recomputeRegister(~x, n)
+procedure recomputeRegister(~x, ~n)
     t:=(1+x[1]+x[2]) mod 2;
     for i in [1..n-1] do
         x[i]:=x[i+1];
@@ -16,7 +16,7 @@ procedure recomputeRegister(~x, n)
     x[n]:=t;
 end procedure;
 
-procedure leastSignificantBitsXor(~x, ~b, length)
+procedure leastSignificantBitsXor(~x, ~b, ~length)
     start:=#x-length+1;
     for i in [start..#x] do
         x[i]:=BitwiseXor(b[i-start+1],x[i]);
@@ -44,12 +44,15 @@ procedure sBoxPermutate(~x, ~permutations)
 end procedure;
 
 function PRINTcipher(m,k)
-    b:=Integers()!48;
-    kLength:=Integers()!(b*5/3);
-    k2Length:=kLength-b;
-    m:=[Integers()!m[i]:i in [1..b]];
-    k:=[Integers()!k[i]:i in [1..kLength]];
+    local b, c, register, permutations,temp;
 
+    b:=48;
+    kLength:=b*5/3;
+    k2Length:=kLength-b;
+    m:=[m[i]:i in [1..b]];
+    k:=[k[i]:i in [1..kLength]];
+    ChangeUniverse(~m,Integers());
+    ChangeUniverse(~k,Integers());
     n:=Integers()!Ceiling(Log(2,b));
 
     k1:=[k[i]:i in [1..b]];    
@@ -66,8 +69,8 @@ function PRINTcipher(m,k)
             c[(3*(i-1) mod (b-1))+1]:=temp[i];
         end for;
         c[b]:=temp[b];
-        recomputeRegister(~register, n);
-        leastSignificantBitsXor(~c,~register, n);
+        recomputeRegister(~register, ~n);
+        leastSignificantBitsXor(~c,~register, ~n);
         generateSBoxPermutations(~c,~k2,~permutations,k2Length/2);
         sBoxPermutate(~c,~permutations);
     end for;
