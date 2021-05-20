@@ -14,7 +14,7 @@ procedure test(m, k, expected)
     cipher:=Seqint(cipher,2);
     function_correct:=expected eq cipher;
     if not function_correct then
-        error("Wrong answer: m=%o k=%o expected_result=%o actual_result=%o\n",m,k,expected,cipher);
+        printf"Wrong answer: m=%o k=%o expected_result=%o actual_result=%o\n",m,k,expected,cipher;
     end if;
 end procedure;
 
