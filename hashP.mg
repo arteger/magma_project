@@ -1,4 +1,7 @@
+load "./print_cipher.mg";
+
 function hashP(m0)
+
     //an input string of n bits to be hashed
     m:=m0; 
     // appending [1] to m
@@ -10,11 +13,11 @@ function hashP(m0)
     number_blocks:=#m/80;  
 
     // h0 = 0
-    h :=VectorSpace(GF(2),48)!0; 
+    h:=VectorSpace(GF(2),48)!0; 
 
     //for each block compute h
-    for i in [1..number_blocks]
-        h := PRINTcipher(h, VectorSpace(GF(2),80)!m[(i-1)*80+1..80*i]) + h;
+    for i in [1..number_blocks] do
+        h:= VectorSpace(GF(2),48)!PRINTcipher(h, VectorSpace(GF(2),80)!m[(i-1)*80+1..80*i]) + h;
     end for;
 
     //define h as the 24-bit vector composed by the the 24 left-most bits of last computed h
