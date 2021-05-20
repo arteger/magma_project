@@ -1,7 +1,11 @@
 load "./hashP.mg";
 
+function IntToSeq(x,n)
+    return Reverse(Prune(Intseq(x+2^n,2)));
+end function;
+
 procedure hexToBin(~x)
-    x:=Intseq(x,2);
+    x:=IntToSeq(x, #Intseq(x,2));
 end procedure;
 
 procedure test(m0, m1)
@@ -15,8 +19,8 @@ procedure test(m0, m1)
     end if;
 end procedure;
 
-test(0xCE8F, 0xB63A);
-test(0x5A11, 0xB149);
-test(0x76235204, 0xB3FCDDC1);
+// test(0x200D4326940BDC5774ADCD0C193E0F0A, 0x4F75C747281E72CFC6985323701D1B76);
+test(0x69F4, 0xF3D4);
+// test(0x76235204, 0xB3FCDDC1);
 
 print "tested";
