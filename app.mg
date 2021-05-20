@@ -1,27 +1,15 @@
-b:=Integers()!48;
-kLength:=Integers()!(b*5/3);
-k2Length:=kLength-b;
+load "./print_cipher.mg";
 
-function append0ToBeginningToLength(a, l)
-    if #a lt l then
-        a:=[0 : i in [1..l-#a]] cat a;
+procedure test(m, k, expected)
+    cipher:=PRINTcipher(m, k);
+    function_correct:=expected eq cipher;
+    if not function_correct then
+        error("Wrong answer: m=%o k=%o expected_result=%o actual_result=%o\n",m,k,expected,cipher);
     end if;
-    return a;
-end function;
+end procedure;
 
-function hexToBinVectorSpaceOfLength(x,l)
-    seq:=Intseq(x,2);
-    full_seq:=append0ToBeginningToLength(seq,l);
-    return VectorSpace(GF(2),l)!full_seq;
-end function;
-
-
-m:=hexToBinVectorSpaceOfLength(0x4C847555C35B,b);
-k:=hexToBinVectorSpaceOfLength(0xC28895BA327B69D2CDB6,bl);
-
-k1:=VectorSpace(GF(2),b)![k[i]:i in [1..b]];    
-k2:=VectorSpace(GF(2),k2Length)![k[i]:i in [(b+1)..kLength]];    
-
-for i in [1..b] do
-x123:=1;
-end for;
+test(0x000000000000, 0x00000000000000000000, 0x291C50FBCC3E);
+test(0xFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFFFFFF, 0x11E2ADE05DA1);
+test(0x4C847555C35B, 0xC28895BA327B69D2CDB6, 0xEB4AF95E7D37);
+test(0x956D54011A3F, 0x64000000000000000042, 0x7A97BAA84F2F);
+print "All tests passed correctly.";
