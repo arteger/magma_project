@@ -1,7 +1,17 @@
 load "./print_cipher.mg";
 
+procedure hexToBinVectorSpaceOfLength(~x,l)
+    seq:=Intseq(x,2);
+    append0ToBeginningToLength(~seq,l);
+    x:=VectorSpace(GF(2),l)!seq;
+end procedure;
+
 procedure test(m, k, expected)
+    hexToBinVectorSpaceOfLength(~m,48);
+    hexToBinVectorSpaceOfLength(~k,80);
     cipher:=PRINTcipher(m, k);
+    cipher:=[Integers()!cipher[i]:i in [1..48]];
+    cipher:=Seqint(cipher,2);
     function_correct:=expected eq cipher;
     if not function_correct then
         error("Wrong answer: m=%o k=%o expected_result=%o actual_result=%o\n",m,k,expected,cipher);

@@ -4,12 +4,6 @@ procedure append0ToBeginningToLength(~a, l)
     end if;
 end procedure;
 
-procedure hexToBinVectorSpaceOfLength(~x,l)
-    seq:=Intseq(x,2);
-    append0ToBeginningToLength(~seq,l);
-    x:=seq;
-end procedure;
-
 procedure recomputeRegister(~x, n)
     t:=(1+x[n]+x[n-1]) mod 2;
     for i in Reverse([2..n]) do
@@ -49,9 +43,10 @@ function PRINTcipher(m,k)
     b:=Integers()!48;
     kLength:=Integers()!(b*5/3);
     k2Length:=kLength-b;
-
-    hexToBinVectorSpaceOfLength(~m,b);
-    hexToBinVectorSpaceOfLength(~k,kLength);
+    m:=[Integers()!m[i]:i in [1..b]];
+    k:=[Integers()!k[i]:i in [1..kLength]];
+    append0ToBeginningToLength(~m,b);
+    append0ToBeginningToLength(~k,kLength);
 
     n:=Integers()!Ceiling(Log(2,b));
 
@@ -74,6 +69,6 @@ function PRINTcipher(m,k)
         generateSBoxPermutations(~c,~k2,~permutations,k2Length/2);
         sBoxPermutate(~c,~permutations);
     end for;
-    c:=Seqint(c,2);
+    c:=VectorSpace(GF(2),b)!c;
     return c;
 end function;
