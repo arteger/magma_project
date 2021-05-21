@@ -10,4 +10,4 @@ procedure findColisions(length)
 end procedure;
 
 
-// findColisions(20000);
+findColisions(1000000);
