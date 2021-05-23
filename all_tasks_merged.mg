@@ -29,7 +29,7 @@ procedure recomputeRegister(~x, ~n)
 end procedure;
 
 //xor of round counter and least significant bits of the current state of the cipher
-procedure leastSignificantBitsXor(~x, ~b, ~length)
+procedure applyXorToLeastSignificantBits(~x, ~b, ~length)
     start:=#x-length+1;
     for i in [start..#x] do
         x[i]:=BitwiseXor(b[i-start+1],x[i]);
@@ -58,6 +58,23 @@ procedure sBoxPermutate(~x, ~permutations)
     end for;
 end procedure;
 
+//combine cipher state with a round key using bitwise xor
+procedure applyBitwiseXor(~b,~c,~k1)
+    for i in [1..b] do
+        c[i]:=BitwiseXor(c[i],k1[i]);
+    end for;
+end procedure;
+
+//shuffle cipher state using a fixed linear diffusion layer,
+//position of first and last bits stays unchanged 
+procedure shuffleStateWithLinearDiffusion(~c,b)
+    temp:=c;
+    for i in [1..b-1] do
+        c[(3*(i-1) mod (b-1))+1]:=temp[i];
+    end for;
+    c[b]:=temp[b];
+end procedure;
+
 //compute PRINTCipher for message m and key k,
 // where m - VectorSpace(GF(2),48)
 // where k - VectorSpace(GF(2),80)
@@ -77,34 +94,29 @@ function PRINTcipher(m,k)
     ChangeUniverse(~m,Integers());
     ChangeUniverse(~k,Integers());
     //length of shift register
-    n:=Integers()!Ceiling(Log(2,b));
-
+    if b eq 48 then
+        registerLength:=6;
+    else
+        registerLength=7;
+    end if;
     //round key, b-bit subkey sk1 of user key 
     k1:=[k[i]:i in [1..b]];  
     //second subkey sk2 for the key-dependent permutations  
     k2:=[k[i]:i in [b+1..kLength]];    
     c:=m;
     //shift register 
-    register:=[0: i in [1..n]];
+    register:=[0: i in [1..registerLength]];
 
     permutations:=[];
     for round in [1..b] do
-        //combine cipher state with a round key using bitwise xor
-        for i in [1..b] do
-            c[i]:=BitwiseXor(c[i],k1[i]);
-        end for;
-        temp:=c;
-        //shuffle cipher state using a fixed linear diffusion layer,
-        //position of first and last bits stays unchanged 
-        for i in [1..b-1] do
-            c[(3*(i-1) mod (b-1))+1]:=temp[i];
-        end for;
-        c[b]:=temp[b];
+        applyBitwiseXor(~b,~c,~k1);
+
+        shuffleStateWithLinearDiffusion(~c,b);
         //generate the value of the round counter RCi
-        recomputeRegister(~register, ~n);
+        recomputeRegister(~register, ~registerLength);
         //combine the round counter RCi with the least significant bits of the current state using xor
-        leastSignificantBitsXor(~c,~register, ~n);
-        //generate the 3-bit entry to each S-box 
+        applyXorToLeastSignificantBits(~c,~register, ~registerLength);
+        //generate the 3-bit permutations for each S-box 
         generateSBoxPermutations(~c,~k2,~permutations,k2Length/2);
         //mix the cipher state using a layer of b/3 non-linear S-box subtitutions 
         sBoxPermutate(~c,~permutations);
@@ -175,7 +187,8 @@ procedure findKeyWithBruteForce(m,c)
                 answerIsFound:=true;
                 printf "Answer is found\n";
                 answer:=VecToInt([k[i]: i in [1..80]]);
-                answer;
+                printf "Answer is %o",k;
+                printf "Answer is %h",answer;
                 break leftBits;
             end if;
         end for;
