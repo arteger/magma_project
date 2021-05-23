@@ -125,7 +125,7 @@ function hashP(m0)
     // appending [1] to m
     m cat:=[1]; 
 
-    // appending [0] to m so that 80 devides m
+    // appending [0] to m so that 80 divides m
     if #m mod 80 ne 0 then
         m cat:= [0 : i in [1..80-(#m mod 80)]]; 
     end if;
